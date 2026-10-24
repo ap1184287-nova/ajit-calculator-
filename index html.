@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="theme-color" content="#030712">
+<meta name="description" content="AJIT CALCULATOR PRO - Free Basic, Scientific, Unit Converter and Programmer Calculator">
+<title>AJIT CALCULATOR PRO</title>
+
+<style>
+:root{
+  --bg:#030712;
+  --panel:#0a1222;
+  --panel2:#101c30;
+  --blue:#078bff;
+  --cyan:#00eaff;
+  --text:#eff8ff;
+  --muted:#91a6c1;
+  --border:rgba(0,234,255,.17);
+  --green:#54ffbb;
+  --red:#ff668a;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse at 10% 0%,rgba(0,113,255,.15),transparent 35%),
+    radial-gradient(ellipse at 100% 20%,rgba(0,234,255,.08),transparent 35%),
+    var(--bg);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+button,input,select{font:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible,select:focus-visible{
+  outline:2px solid var(--cyan);
+  outline-offset:2px;
+}
+.app{max-width:1100px;margin:auto;padding:18px}
+.header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:8px 0 24px;
+}
+.brand{display:flex;align-items:center;gap:12px}
+.logo{
+  width:49px;height:49px;border-radius:15px;
+  display:grid;place-items:center;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#00111d;font-size:20px;font-weight:1000;
+  box-shadow:0 0 25px rgba(0,234,255,.22);
+}
+.brand h1{font-size:19px;margin:0;letter-spacing:.8px}
+.brand h1 span{color:var(--cyan)}
+.brand p{margin:5px 0 0;color:var(--muted);font-size:10px;letter-spacing:1.6px}
+.badge{
+  border:1px solid var(--border);border-radius:30px;
+  padding:9px 12px;color:var(--cyan);font-size:11px;font-weight:bold;
+}
+.tabs{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  gap:8px;margin-bottom:18px;
+}
+.tab{
+  padding:13px 6px;border:1px solid #1b3049;border-radius:13px;
+  background:var(--panel);color:#bfd1e6;font-size:12px;font-weight:800;
+}
+.tab.active{
+  background:linear-gradient(135deg,#087bff,#00cfff);
+  color:#00101b;border-color:transparent;
+  box-shadow:0 0 20px rgba(0,234,255,.13);
+}
+.panel{
+  background:linear-gradient(145deg,rgba(13,25,44,.97),rgba(5,12,25,.98));
+  border:1px solid var(--border);border-radius:22px;
+  padding:18px;box-shadow:0 18px 50px rgba(0,0,0,.22);
+}
+.page{display:none}
+.page.active{display:block}
+.display{
+  border:1px solid #1d3854;border-radius:17px;
+  padding:18px 16px;background:#030916;margin-bottom:14px;
+  overflow:hidden;
+}
+.display-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.display-label{font-size:10px;color:var(--muted);letter-spacing:1.5px}
+.mode-btn{
+  border:1px solid var(--border);border-radius:9px;
+  background:#0d2034;color:var(--cyan);padding:7px 10px;
+  font-size:11px;font-weight:bold;
+}
+.expression{
+  width:100%;border:0;outline:none;background:transparent;
+  color:#a9c5e3;text-align:right;font-size:18px;
+  margin-top:22px;min-height:28px;
+}
+.result{
+  width:100%;overflow-wrap:anywhere;text-align:right;
+  color:var(--cyan);font-size:clamp(30px,7vw,47px);
+  font-weight:800;min-height:55px;margin-top:7px;
+  text-shadow:0 0 20px rgba(0,234,255,.15);
+}
+.result.error{color:var(--red);font-size:22px}
+.keypad{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px;
+}
+.key{
+  min-height:57px;border:1px solid #1b3049;border-radius:14px;
+  background:linear-gradient(145deg,#122039,#0b1424);
+  color:#f0f7ff;font-size:19px;font-weight:700;
+  box-shadow:0 3px 0 #040914;transition:transform .1s,border-color .15s;
+}
+.key:active{transform:scale(.96)}
+.key.func{color:var(--cyan);background:#0b2031}
+.key.op{color:#7cbaff;background:#0d1c30}
+.key.danger{color:#ff8ca6;background:#291421}
+.key.equal{
+  color:#00111b;background:linear-gradient(135deg,#078bff,#00eaff);
+  border:0;font-size:24px;
+}
+.key.wide{grid-column:span 2}
+.section-title{font-size:20px;margin:0 0 7px}
+.section-desc{color:var(--muted);font-size:12px;line-height:1.6;margin:0 0 18px}
+.scientific-grid{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;
+  margin-bottom:10px;
+}
+.scikey{
+  min-height:47px;border-radius:11px;border:1px solid #1b3b55;
+  background:#0b2032;color:var(--cyan);font-size:13px;font-weight:800;
+}
+.scikey:active{background:#123754}
+.scientific-grid .key{min-height:48px;font-size:15px}
+.field{
+  display:flex;flex-direction:column;gap:7px;margin-bottom:14px;
+}
+.field label{font-size:12px;color:#b5c8df}
+.field input,.field select,.convert-input{
+  width:100%;min-width:0;padding:13px;
+  border:1px solid #29415b;border-radius:12px;
+  background:#050d1b;color:white;outline:none;
+}
+.field select option{background:#081426;color:white}
+.primary,.secondary,.danger-btn{
+  padding:12px 15px;border:0;border-radius:12px;
+  font-weight:800;
+}
+.primary{background:linear-gradient(135deg,#087bff,#00dfff);color:#00101b}
+.secondary{background:#122239;border:1px solid var(--border);color:var(--cyan)}
+.danger-btn{background:#301522;border:1px solid #693047;color:#ff9bb4}
+.row{display:flex;gap:9px;flex-wrap:wrap}
+.row>*{flex:1}
+.output-box{
+  margin-top:14px;padding:15px;border:1px solid var(--border);
+  border-radius:13px;background:#050d1b;overflow-wrap:anywhere;
+}
+.output-label{font-size:11px;color:var(--muted);margin-bottom:8px}
+.output-value{font-size:24px;color:var(--cyan);font-weight:800}
+.history-list{display:grid;gap:9px}
+.history-item{
+  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  padding:13px;border:1px solid #1b3049;border-radius:12px;
+  background:#081324;
+}
+.history-expression{font-size:13px;color:#afc2da;overflow-wrap:anywhere}
+.history-answer{color:var(--cyan);font-weight:800;margin-top:5px;overflow-wrap:anywhere}
+.history-actions{display:flex;gap:5px;flex-shrink:0}
+.mini-btn{
+  padding:8px;border:1px solid #26405b;border-radius:8px;
+  background:#102038;color:var(--cyan);font-size:12px;
+}
+.empty{text-align:center;color:var(--muted);padding:35px 10px;line-height:1.8}
+.footer{text-align:center;color:#71849d;font-size:11px;padding:23px 0 10px}
+.toast{
+  position:fixed;bottom:20px;left:50%;transform:translate(-50%,15px);
+  opacity:0;pointer-events:none;z-index:20;
+  background:#10253b;border:1px solid var(--cyan);
+  border-radius:12px;padding:12px 16px;color:white;
+  font-size:13px;max-width:90%;transition:.2s;
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.small-note{color:var(--muted);font-size:11px;line-height:1.7;margin-top:12px}
+.converter-result{display:grid;gap:9px}
+.converter-result div{
+  padding:12px;border:1px solid #1c334c;border-radius:10px;
+  background:#081323;overflow-wrap:anywhere;
+}
+.converter-result strong{color:var(--cyan)}
+@media(max-width:600px){
+  .app{padding:12px}
+  .header{margin:5px 0 18px}
+  .brand h1{font-size:15px}
+  .brand p{font-size:8px;letter-spacing:1px}
+  .logo{width:42px;height:42px}
+  .badge{font-size:9px;padding:8px}
+  .tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .tab{padding:12px 4px;font-size:11px}
+  .panel{padding:12px;border-radius:17px}
+  .keypad{gap:7px}
+  .key{min-height:53px;border-radius:12px;font-size:18px}
+  .scientific-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+  .scientific-grid .key,.scikey{min-height:44px;font-size:12px}
+  .display{padding:15px 12px}
+  .expression{font-size:16px}
+  .result{font-size:35px}
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+  <header class="header">
+    <div class="brand">
+      <div class="logo">AP</div>
+      <div>
+        <h1>AJIT <span>CALCULATOR PRO</span></h1>
+        <p>SMART • SCIENTIFIC • POWERFUL</p>
+      </div>
+    </div>
+    <div class="badge">⚡ ULTRA PRO</div>
+  </header>
+
+  <nav class="tabs" aria-label="Calculator modes">
+    <button class="tab active" data-page="basic">🧮 Basic</button>
+    <button class="tab" data-page="scientific">📐 Scientific</button>
+    <button class="tab" data-page="history">📜 History</button>
+    <button class="tab" data-page="converter">📏 Converter</button>
+    <button class="tab" data-page="programmer">💻 Programmer</button>
+  </nav>
+
+  <!-- BASIC CALCULATOR -->
+  <section class="page active" id="basic">
+    <div class="panel">
+      <div class="display">
+        <div class="display-top">
+          <span class="display-label">BASIC CALCULATOR</span>
+          <button class="mode-btn" id="copyBasic">COPY</button>
+        </div>
+        <input id="basicExpression" class="expression"
+          aria-label="Expression" placeholder="0" autocomplete="off">
+        <div id="basicResult" class="result" aria-live="polite">0</div>
+      </div>
+
+      <div class="keypad" id="basicKeys">
+        <button class="key danger" data-action="clear">AC</button>
+        <button class="key func" data-action="back">⌫</button>
+        <button class="key func" data-value="%">%</button>
+        <button class="key op" data-value="/">÷</button>
+
+        <button class="key" data-value="7">7</button>
+        <button class="key" data-value="8">8</button>
+        <button class="key" data-value="9">9</button>
+        <button class="key op" data-value="*">×</button>
+
+        <button class="key" data-value="4">4</button>
+        <button class="key" data-value="5">5</button>
+        <button class="key" data-value="6">6</button>
+        <button class="key op" data-value="-">−</button>
+
+        <button class="key" data-value="1">1</button>
+        <button class="key" data-value="2">2</button>
+        <button class="key" data-value="3">3</button>
+        <button class="key op" data-value="+">+</button>
+
+        <button class="key func" data-value="(">(</button>
+        <button class="key" data-value="0">0</button>
+        <button class="key" data-value=".">.</button>
+        <button class="key func" data-value=")">)</button>
+
+        <button class="key func" data-value="^">xʸ</button>
+        <button class="key func" data-value="sqrt(">√</button>
+        <button class="key func" data-value="pi">π</button>
+        <button class="key equal" data-action="equals">=</button>
+      </div>
+      <p class="small-note">Keyboard से भी गणना कर सकते हो। प्रतिशत के लिए जैसे 200 × 10% = 20.</p>
+    </div>
+  </section>
+
+  <!-- SCIENTIFIC CALCULATOR -->
+  <section class="page" id="scientific">
+    <div class="panel">
+      <h2 class="section-title">Scientific Calculator</h2>
+      <p class="section-desc">Trigonometry, logarithm, powers और advanced गणनाएँ।</p>
+
+      <div class="display">
+        <div class="display-top">
+          <span class="display-label">SCIENTIFIC MODE</span>
+          <button class="mode-btn" id="angleMode">DEG</button>
+        </div>
+        <input id="sciExpression" class="expression"
+          aria-label="Scientific expression" placeholder="sin(30)">
+        <div id="sciResult" class="result">0</div>
+      </div>
+
+      <div class="scientific-grid" id="scientificKeys">
+        <button class="scikey" data-value="sin(">sin</button>
+        <button class="scikey" data-value="cos(">cos</button>
+        <button class="scikey" data-value="tan(">tan</button>
+        <button class="scikey" data-value="sqrt(">√</button>
+
+        <button class="scikey" data-value="asin(">sin⁻¹</button>
+        <button class="scikey" data-value="acos(">cos⁻¹</button>
+        <button class="scikey" data-value="atan(">tan⁻¹</button>
+        <button class="scikey" data-value="^2">x²</button>
+
+        <button class="scikey" data-value="log(">log</button>
+        <button class="scikey" data-value="ln(">ln</button>
+        <button class="scikey" data-value="abs(">abs</button>
+        <button class="scikey" data-value="^">xʸ</button>
+
+        <button class="scikey" data-value="pi">π</button>
+        <button class="scikey" data-value="e">e</button>
+        <button class="scikey" data-value="(">(</button>
+        <button class="scikey" data-value=")">)</button>
+
+        <button class="scikey" data-value="7">7</button>
+        <button class="scikey" data-value="8">8</button>
+        <button class="scikey" data-value="9">9</button>
+        <button class="scikey" data-value="/">÷</button>
+
+        <button class="scikey" data-value="4">4</button>
+        <button class="scikey" data-value="5">5</button>
+        <button class="scikey" data-value="6">6</button>
+        <button class="scikey" data-value="*">×</button>
+
+        <button class="scikey" data-value="1">1</button>
+        <button class="scikey" data-value="2">2</button>
+        <button class="scikey" data-value="3">3</button>
+        <button class="scikey" data-value="-">−</button>
+
+        <button class="scikey" data-value="0">0</button>
+        <button class="scikey" data-value=".">.</button>
+        <button class="scikey" data-value="+">+</button>
+        <button class="scikey" data-action="back">⌫</button>
+
+        <button class="scikey" data-action="clear">AC</button>
+        <button class="scikey" data-action="equals" style="grid-column:span 3;background:linear-gradient(135deg,#078bff,#00eaff);color:#00101b">CALCULATE =</button>
+      </div>
+      <p class="small-note">DEG मोड में sin(30) = 0.5। RAD मोड में कोण radians में लिया जाएगा।</p>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section class="page" id="history">
+    <div class="panel">
+      <h2 class="section-title">Calculation History</h2>
+      <p class="section-desc">इस ब्राउज़र में सेव की गई पुरानी गणनाएँ।</p>
+      <div class="row" style="margin-bottom:15px">
+        <button class="secondary" id="exportHistory">History डाउनलोड</button>
+        <button class="danger-btn" id="clearHistory">History मिटाएँ</button>
+      </div>
+      <div id="historyList" class="history-list"></div>
+      <div id="historyEmpty" class="empty">अभी कोई हिस्ट्री नहीं है।<br>पहले कोई गणना करो।</div>
+    </div>
+  </section>
+
+  <!-- UNIT CONVERTER -->
+  <section class="page" id="converter">
+    <div class="panel">
+      <h2 class="section-title">Unit Converter</h2>
+      <p class="section-desc">लंबाई, वजन, तापमान, समय और डेटा इकाइयाँ बदलो।</p>
+
+      <div class="field">
+        <label for="unitType">Conversion प्रकार</label>
+        <select id="unitType">
+          <option value="length">लंबाई / Length</option>
+          <option value="weight">वजन / Weight</option>
+          <option value="temperature">तापमान / Temperature</option>
+          <option value="time">समय / Time</option>
+          <option value="data">डिजिटल डेटा / Data</option>
+          <option value="speed">गति / Speed</option>
+          <option value="area">क्षेत्रफल / Area</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="unitValue">संख्या</label>
+        <input id="unitValue" type="number" value="1" inputmode="decimal">
+      </div>
+
+      <div class="field">
+        <label for="unitFrom">से / From</label>
+        <select id="unitFrom"></select>
+      </div>
+
+      <div class="field">
+        <label for="unitTo">में / To</label>
+        <select id="unitTo"></select>
+      </div>
+
+      <button class="primary" id="convertButton" style="width:100%">CONVERT ⚡</button>
+
+      <div class="output-box">
+        <div class="output-label">CONVERSION RESULT</div>
+        <div class="output-value" id="conversionResult">1</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROGRAMMER -->
+  <section class="page" id="programmer">
+    <div class="panel">
+      <h2 class="section-title">Programmer Calculator</h2>
+      <p class="section-desc">Binary, Decimal, Octal और Hexadecimal नंबर सिस्टम में कन्वर्ज़न।</p>
+
+      <div class="field">
+        <label for="programmerInput">नंबर डालो</label>
+        <input id="programmerInput" value="255" autocomplete="off" spellcheck="false">
+      </div>
+
+      <div class="field">
+        <label for="numberBase">नंबर का वर्तमान Base</label>
+        <select id="numberBase">
+          <option value="10">Decimal (Base 10)</option>
+          <option value="2">Binary (Base 2)</option>
+          <option value="8">Octal (Base 8)</option>
+          <option value="16">Hexadecimal (Base 16)</option>
+        </select>
+      </div>
+
+      <button class="primary" id="programmerConvert" style="width:100%">CONVERT NUMBER</button>
+
+      <div id="programmerResults" class="converter-result" style="margin-top:15px"></div>
+      <p class="small-note">यह कन्वर्ज़न JavaScript BigInt से होता है, इसलिए बड़े पूर्णांक भी सपोर्ट होते हैं।</p>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <b>AJIT CALCULATOR PRO</b><br>
+    Built for learning and everyday calculations.<br>
+    Free • No Login • No API
+  </footer>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script>
+"use strict";
+
+/* ------------------------------
+   AJIT CALCULATOR PRO
+------------------------------ */
+
+const $ = id => document.getElementById(id);
+
+let angleMode = "DEG";
+let historyItems = [];
+
+try {
+  const saved = JSON.parse(localStorage.getItem("ajitCalcHistory") || "[]");
+  if (Array.isArray(saved)) historyItems = saved;
+} catch (_) {}
+
+function toast(message) {
+  const box = $("toast");
+  box.textContent = message;
+  box.classList.add("show");
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => box.classList.remove("show"), 2300);
+}
+
+/* ---------- NAVIGATION ---------- */
+
+document.querySelectorAll(".tab").forEach(button => {
+  button.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach(b => {
+      b.classList.toggle("active", b === button);
+    });
+
+    document.querySelectorAll(".page").forEach(page => {
+      page.classList.toggle("active", page.id === button.dataset.page);
+    });
+
+    if (button.dataset.page === "history") renderHistory();
+    if (button.dataset.page === "converter") convertUnits();
+    if (button.dataset.page === "programmer") convertProgrammer();
+  });
+});
+
+/* ---------- SAFE MATHEMATICAL PARSER ---------- */
+
+/*
+  This parser supports:
+  + - * / % ^ parentheses and whitelisted functions.
+  It does not evaluate arbitrary JavaScript.
+*/
+
+function tokenize(expression) {
+  const s = expression.replace(/\s+/g, "");
+  const tokens = [];
+  let i = 0;
+
+  while (i < s.length) {
+    const rest = s.slice(i);
+    const number = rest.match(/^(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?/i);
+
+    if (number) {
+      tokens.push({type:"number", value:Number(number[0])});
+      i += number[0].length;
+      continue;
+    }
+
+    const name = rest.match(/^[a-zA-Z]+/);
+    if (name) {
+      tokens.push({type:"name", value:name[0].toLowerCase()});
+      i += name[0].length;
+      continue;
+    }
+
+    const char = s[i];
+
+    if ("+-*/%^()".includes(char)) {
+      tokens.push({type:char, value:char});
+      i++;
+      continue;
+    }
+
+    throw new Error("गलत चिन्ह: " + char);
+  }
+
+  return tokens;
+}
+
+const FUNCTIONS = {
+  sin: x => Math.sin(angleMode === "DEG" ? x * Math.PI / 180 : x),
+  cos: x => Math.cos(angleMode === "DEG" ? x * Math.PI / 180 : x),
+  tan: x => Math.tan(angleMode === "DEG" ? x * Math.PI / 180 : x),
+  asin: x => angleMode === "DEG" ? Math.asin(x) * 180 / Math.PI : Math.asin(x),
+  acos: x => angleMode === "DEG" ? Math.acos(x) * 180 / Math.PI : Math.acos(x),
+  atan: x => angleMode === "DEG" ? Math.atan(x) * 180 / Math.PI : Math.atan(x),
+  sqrt: Math.sqrt,
+  log: Math.log10,
+  ln: Math.log,
+  abs: Math.abs,
+  floor: Math.floor,
+  ceil: Math.ceil,
+  round: Math.round,
+  exp: Math.exp
+};
+
+function calculate(expression) {
+  const tokens = tokenize(expression);
+  let pos = 0;
+
+  if (!tokens.length) throw new Error("पहले गणना लिखो");
+
+  function peek() {
+    return tokens[pos];
+  }
+
+  function take(type) {
+    const token = tokens[pos];
+    if (!token || token.type !== type) {
+      throw new Error("Expression पूरा नहीं है");
+    }
+    pos++;
+    return token;
+  }
+
+  function parsePrimary() {
+    const token = peek();
+    if (!token) throw new Error("Expression पूरा नहीं है");
+
+    if (token.type === "+") {
+      pos++;
+      return parseUnary();
+    }
+
+    if (token.type === "-") {
+      pos++;
+      return -parseUnary();
+    }
+
+    if (token.type === "number") {
+      pos+
