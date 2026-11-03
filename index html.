@@ -1,383 +1,411 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subway Surfers 2D Clone</title>
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background: #222;
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            color: white;
-            overflow: hidden;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#07111f">
+<title>LIVE SCORE | Cricket</title>
 
-        #game-container {
-            position: relative;
-            box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.7);
-        }
-
-        #score-board {
-            position: absolute;
-            top: 10px;
-            left: 20px;
-            font-size: 20px;
-            font-weight: bold;
-            z-index: 10;
-            background: rgba(0,0,0,0.5);
-            padding: 5px 10px;
-            border-radius: 5px;
-        }
-
-        canvas {
-            background: linear-gradient(to bottom, #87CEEB, #555); /* Sky to Ground */
-            display: block;
-            border: 4px solid #fff;
-            border-radius: 10px;
-        }
-
-        #game-over-screen {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 10px;
-        }
-
-        #game-over-screen.hidden {
-            display: none;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            background-color: #ffcc00;
-            border: none;
-            border-radius: 5px;
-            margin-top: 15px;
-        }
-
-        button:hover {
-            background-color: #e6b800;
-        }
-    </style>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+ background:#07111f;color:#fff;
+ font-family:Arial,sans-serif;
+ min-height:100vh;
+}
+header{
+ padding:22px 16px;
+ background:linear-gradient(135deg,#082d48,#075985);
+ border-bottom:1px solid #164e63;
+}
+.header{
+ max-width:900px;margin:auto;
+ display:flex;justify-content:space-between;
+ align-items:center;gap:10px;
+}
+.logo{font-size:25px;font-weight:900;letter-spacing:1px}
+.logo span{color:#38e8b5}
+.tag{font-size:11px;color:#a5f3fc;margin-top:5px}
+.live-indicator{
+ background:#dc2626;padding:7px 12px;
+ border-radius:20px;font-size:12px;font-weight:bold;
+}
+main{max-width:900px;margin:auto;padding:18px 13px}
+.welcome{
+ padding:18px;border-radius:16px;
+ background:linear-gradient(120deg,#102b44,#102039);
+ margin-bottom:20px;
+}
+.welcome h2{font-size:21px;margin-bottom:7px}
+.welcome p{color:#9fb3c8;font-size:13px;line-height:1.5}
+.toolbar{
+ display:flex;gap:9px;margin-bottom:15px;
+}
+.search{
+ flex:1;min-width:0;padding:13px;
+ background:#14263a;border:1px solid #29445e;
+ border-radius:10px;color:white;outline:none;
+ font-size:14px;
+}
+button{
+ border:0;cursor:pointer;font-weight:bold;
+}
+.refresh{
+ padding:0 15px;border-radius:10px;
+ background:#0891b2;color:white;font-size:14px;
+}
+.filters{
+ display:flex;gap:8px;overflow-x:auto;
+ padding-bottom:13px;margin-bottom:8px;
+}
+.filter{
+ padding:9px 17px;border-radius:22px;
+ background:#172a40;color:#cbd5e1;
+ white-space:nowrap;font-size:13px;
+}
+.filter.active{background:#0891b2;color:white}
+.info{
+ color:#91a5b9;font-size:12px;
+ margin-bottom:15px;
+ display:flex;justify-content:space-between;
+ gap:8px;flex-wrap:wrap;
+}
+.match{
+ background:linear-gradient(145deg,#132940,#0d1b2d);
+ border:1px solid #24445c;
+ border-radius:15px;padding:17px;
+ margin-bottom:13px;
+}
+.match-top{
+ display:flex;justify-content:space-between;
+ gap:10px;align-items:center;margin-bottom:17px;
+}
+.tournament{font-size:12px;color:#9db3c8}
+.status{
+ font-size:11px;font-weight:bold;
+ color:#cbd5e1;background:#263c51;
+ padding:6px 9px;border-radius:15px;
+}
+.status.live{background:#7f1d1d;color:#fecaca}
+.teams{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:12px;
+}
+.team{text-align:center;min-width:0}
+.team-name{
+ font-size:15px;font-weight:bold;
+ overflow-wrap:anywhere;
+}
+.score{
+ font-size:25px;font-weight:900;
+ color:#fff;margin-top:10px;
+}
+.score small{font-size:12px;color:#9fb3c8}
+.vs{
+ text-align:center;color:#64748b;
+ font-size:12px;margin:12px 0;
+}
+.match-status{
+ border-top:1px solid #294158;
+ margin-top:17px;padding-top:12px;
+ color:#9fb3c8;font-size:12px;
+ text-align:center;line-height:1.5;
+}
+.empty{
+ text-align:center;padding:45px 15px;
+ background:#12243a;border-radius:15px;
+ color:#9fb3c8;line-height:1.8;
+}
+.loading{text-align:center;padding:35px;color:#67e8f9}
+footer{
+ text-align:center;padding:25px 12px;
+ color:#8498ad;font-size:12px;line-height:2;
+}
+footer a{color:#38bdf8}
+@media(max-width:420px){
+ .logo{font-size:21px}
+ .score{font-size:21px}
+ .team-name{font-size:13px}
+}
+</style>
 </head>
+
 <body>
 
-    <div id="game-container">
-        <div id="score-board">Score: <span id="score">0</span> | Coins: <span id="coins">0</span></div>
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <div id="game-over-screen" class="hidden">
-            <h1>Game Over!</h1>
-            <p>Press "Space" or Click Restart to Play Again</p>
-            <button id="restart-btn">Restart</button>
-        </div>
+<header>
+ <div class="header">
+  <div>
+   <div class="logo">🏏 LIVE <span>SCORE</span></div>
+   <div class="tag">YOUR CRICKET SCORE CENTER</div>
+  </div>
+  <div class="live-indicator">● LIVE</div>
+ </div>
+</header>
+
+<main>
+
+ <section class="welcome">
+  <h2>Cricket Live Scores 🏏</h2>
+  <p>दुनिया भर के क्रिकेट मैचों के स्कोर और मैच की स्थिति यहां देखें।</p>
+ </section>
+
+ <div class="toolbar">
+  <input id="search" class="search"
+   type="search" placeholder="टीम या मैच खोजें...">
+  <button class="refresh" id="refresh">↻ Refresh</button>
+ </div>
+
+ <div class="filters">
+  <button class="filter active" data-filter="all">सभी मैच</button>
+  <button class="filter" data-filter="live">🔴 LIVE</button>
+  <button class="filter" data-filter="upcoming">आने वाले</button>
+  <button class="filter" data-filter="finished">समाप्त</button>
+ </div>
+
+ <div class="info">
+  <span id="matchCount">मैच लोड हो रहे हैं...</span>
+  <span id="lastUpdate">अपडेट का इंतजार...</span>
+ </div>
+
+ <div id="matches">
+  <div class="loading">🏏 मैच लोड हो रहे हैं...</div>
+ </div>
+
+</main>
+
+<footer>
+ <div>Made with ❤️ | LIVE SCORE</div>
+ <div>Cricket data provided by
+ <a href="https://sportscore.com/" target="_blank" rel="noopener">
+ SportScore
+ </a>
+ </div>
+ <div>Automatic update every 60 seconds</div>
+</footer>
+
+<script>
+const API =
+ "https://sportscore.com/api/widget/matches/?sport=cricket&limit=50";
+
+const container = document.getElementById("matches");
+const search = document.getElementById("search");
+const count = document.getElementById("matchCount");
+const lastUpdate = document.getElementById("lastUpdate");
+const refreshBtn = document.getElementById("refresh");
+
+let allMatches = [];
+let currentFilter = "all";
+let loading = false;
+
+function safe(value){
+ return String(value ?? "").replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",
+  '"':"&quot;","'":"&#39;"
+ }[c]));
+}
+
+function getText(value){
+ if(value === null || value === undefined) return "";
+ if(typeof value === "object"){
+  if(Array.isArray(value)){
+   return value.map(getText).filter(Boolean).join(" | ");
+  }
+  return [
+   value.runs !== undefined ? value.runs : "",
+   value.wickets !== undefined ? "/"+value.wickets : "",
+   value.overs !== undefined ? " ("+value.overs+" ov)" : ""
+  ].join("") || "";
+ }
+ return String(value);
+}
+
+function getStatus(match){
+ return (
+  String(match.status || "") + " " +
+  String(match.status_text || "")
+ ).toLowerCase();
+}
+
+function category(match){
+ const s = getStatus(match);
+
+ if(/live|in.play|in_progress|innings|stumps/.test(s))
+  return "live";
+
+ if(/finish|complete|result|abandon|cancel/.test(s))
+  return "finished";
+
+ if(/upcoming|scheduled|not.started|preview/.test(s))
+  return "upcoming";
+
+ return "other";
+}
+
+function makeScore(match, side){
+ const score = match[side+"_score"];
+ if(score !== undefined && score !== null && score !== "")
+  return getText(score);
+
+ const innings = match.innings;
+ if(Array.isArray(innings)){
+  const team = match[side];
+  const found = innings.filter(i =>
+   String(i.team || i.team_name || "").toLowerCase() ===
+   String(team || "").toLowerCase()
+  );
+  if(found.length){
+   return found.map(i => getText(i.score || i)).join(" | ");
+  }
+ }
+ return "—";
+}
+
+function render(){
+ const query = search.value.toLowerCase().trim();
+
+ const filtered = allMatches.filter(m => {
+  const name = (
+   String(m.home || "") + " " +
+   String(m.away || "") + " " +
+   String(m.status_text || "")
+  ).toLowerCase();
+
+  const matchFilter =
+   currentFilter === "all" ||
+   category(m) === currentFilter;
+
+  return matchFilter && name.includes(query);
+ });
+
+ count.textContent = filtered.length + " मैच";
+
+ if(!filtered.length){
+  container.innerHTML = `
+   <div class="empty">
+    <div style="font-size:35px">🏏</div>
+    <h3>कोई मैच नहीं मिला</h3>
+    <p>अभी इस कैटेगरी में मैच उपलब्ध नहीं है।</p>
+   </div>`;
+  return;
+ }
+
+ container.innerHTML = filtered.map(m => {
+  const status = category(m);
+  const label = status === "live" ? "● LIVE" :
+   status === "finished" ? "FINISHED" :
+   status === "upcoming" ? "UPCOMING" :
+   safe(m.status_text || m.status || "MATCH");
+
+  return `
+   <article class="match">
+    <div class="match-top">
+     <div class="tournament">
+      🏆 ${safe(m.competition || "Cricket Match")}
+     </div>
+     <span class="status ${status === "live" ? "live" : ""}">
+      ${label}
+     </span>
     </div>
 
-    <script>
-        const canvas = document.getElementById("gameCanvas");
-        const ctx = canvas.getContext("2d");
-        const scoreEl = document.getElementById("score");
-        const coinsEl = document.getElementById("coins");
-        const gameOverScreen = document.getElementById("game-over-screen");
-        const restartBtn = document.getElementById("restart-btn");
+    <div class="teams">
+     <div class="team">
+      <div class="team-name">${safe(m.home || "Team 1")}</div>
+      <div class="score">
+       ${safe(makeScore(m,"home"))}
+      </div>
+     </div>
 
-        // गेम वेरिएबल्स
-        let score = 0;
-        let coins = 0;
-        let gameActive = true;
-        let obstacles = [];
-        let collectibles = [];
-        let gameSpeed = 5;
-        let frameCount = 0;
-
-        // प्लेयर ऑब्जेक्ट
-        const player = {
-            x: 100,
-            y: 300,
-            width: 40,
-            height: 60,
-            originalHeight: 60,
-            crouchHeight: 30,
-            color: "#ff3366",
-            jumping: false,
-            crouching: false,
-            ySpeed: 0,
-            gravity: 0.6,
-            jumpPower: -12,
-            groundY: 300
-        };
-
-        // कीबोर्ड कंट्रोल्स
-        const keys = {};
-        window.addEventListener("keydown", (e) => {
-            keys[e.code] = true;
-            
-            // Jump: Up Arrow या W
-            if ((e.code === "ArrowUp" || e.code === "KeyW") && !player.jumping && !player.crouching) {
-                player.ySpeed = player.jumpPower;
-                player.jumping = true;
-            }
-            // Crouch: Down Arrow या S
-            if (e.code === "ArrowDown" || e.code === "KeyS") {
-                player.crouching = true;
-                player.height = player.crouchHeight;
-                if(!player.jumping) player.y = player.groundY + (player.originalHeight - player.crouchHeight);
-            }
-            // Restart on Space when Game Over
-            if (e.code === "Space" && !gameActive) {
-                restartGame();
-            }
-        });
-
-        window.addEventListener("keyup", (e) => {
-            keys[e.code] = false;
-            if (e.code === "ArrowDown" || e.code === "KeyS") {
-                player.crouching = false;
-                player.height = player.originalHeight;
-                if(!player.jumping) player.y = player.groundY;
-            }
-        });
-
-        // रुकावटें (Obstacles) बनाना
-        function spawnObstacle() {
-            const type = Math.random() > 0.5 ? "tall" : "wide";
-            if (type === "tall") {
-                obstacles.push({
-                    x: canvas.width,
-                    y: 320,
-                    width: 30,
-                    height: 40,
-                    color: "#33ccff"
-                });
-            } else {
-                obstacles.push({
-                    x: canvas.width,
-                    y: 260,
-                    width: 40,
-                    height: 30,
-                    color: "#ffcc00"
-                });
-            }
-        }
-
-        // सिक्के (Coins) स्पॉन करना
-        function spawnCoin() {
-            collectibles.push({
-                x: canvas.width,
-                y: Math.random() > 0.5 ? 250 : 310,
-                radius: 10,
-                color: "#ffd700"
-            });
-        }
-
-        // कोलिशन डिटेक्शन
-        function checkCollision(rect1, rect2) {
-            return rect1.x < rect2.x + rect2.width &&
-                   rect1.x + rect1.width > rect2.x &&
-                   rect1.y < rect2.y + rect2.height &&
-                   rect1.y + rect1.height > rect2.y;
-        }
-
-        // गेम रीस्टार्ट
-        function restartGame() {
-            score = 0;
-            coins = 0;
-            obstacles = [];
-            collectibles = [];
-            gameSpeed = 5;
-            gameActive = true;
-            player.y = player.groundY;
-            player.ySpeed = 0;
-            player.jumping = false;
-            gameOverScreen.classList.add("hidden");
-            animate();
-        }
-
-        restartBtn.addEventListener("click", restartGame);
-
-        // मेन गेम लूप
-        function animate() {
-            if (!gameActive) return;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            frameCount++;
-
-            // ज़मीन बनाना
-            ctx.fillStyle = "#444";
-            ctx.fillRect(0, 360, canvas.width, 40); 
-
-            // प्लेयर का मूवमेंट और ग्रेविटी
-            if (player.jumping) {
-                player.ySpeed += player.gravity;
-                player.y += player.ySpeed;
-
-                if (player.y >= player.groundY) {
-                    player.y = player.groundY;
-                    player.jumping = false;
-                    player.ySpeed = 0;
-                }
-            }
-            
-            // प्लेयर ड्रा करना
-            ctx.fillStyle = player.color;
-            ctx.fillRect(player.x, player.y, player.width, player.height);
-
-            // बाधाओं को संभालना
-            if (frameCount % 120 === 0) spawnObstacle();
-            
-            for (let i = obstacles.length - 1; i >= 0; i--) {
-                let obs = obstacles[i];
-                obs.x -= gameSpeed;
-                
-                ctx.fillStyle = obs.color;
-                ctx.fillRect(obs.x, obs.y, obs.width, obs.height);
-
-                if (checkCollision(player, obs)) {
-                    gameActive = false;
-                    gameOverScreen.classList.remove("hidden");
-                }
-
-                if (obs.x + obs.width < 0) obstacles.splice(i, 1);
-            }
-
-            // कॉइन्स को संभालना
-            if (frameCount % 80 === 0) spawnCoin();
-            
-            for (let i = collectibles.length - 1; i >= 0; i--) {
-                let coin = collectibles[i];
-                coin.x -= gameSpeed;
-
-                ctx.beginPath();
-                ctx.arc(coin.x, coin.y, coin.radius, 0, Math.PI * 2);
-                ctx.fillStyle = coin.color;
-                ctx.fill();
-                ctx.closePath();
-
-                let coinRect = { x: coin.x - coin.radius, y: coin.y - coin.radius, width: coin.radius * 2, height: coin.radius * 2 };
-                if (checkCollision(player, coinRect)) {
-                    coins++;
-                    coinsEl.innerText = coins;
-                    collectibles.splice(i, 1);
-                    continue;
-                }
-
-                if (coin.x + coin.radius < 0) collectibles.splice(i, 1);
-            }
-
-            // स्कोर और स्पीड बढ़ाना
-            score++;
-            scoreEl.innerText = score;
-            if (score % 500 === 0) gameSpeed += 0.5;
-
-            requestAnimationFrame(animate);
-        }
-
-        // गेम शुरू करें
-        animate();
-    </script>
-</body>
-</html>
-body {
-    margin: 0;
-    padding: 0;
-    background: #222;
-    font-family: 'Arial', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: white;
-}
-
-#game-container {
-    position: relative;
-    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.7);
-}
-
-#score-board {
-    position: absolute;
-    top: 10px;
-    left: 20px;
-    font-size: 20px;
-    font-weight: bold;
-    z-index: 10;
-    background: rgba(0,0,0,0.5);
-    padding: 5px 10px;
-    border-radius: 5px;
-}
-
-canvas {
-    background: linear-gradient(to bottom, #87CEEB #555); /* Sky to Ground */
-    display: block;
-    border: 4px solid #fff;
-    border-radius: 10px;
-}
-
-#game-over-screen {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 10px;
-}
-
-#game-over-screen.hidden {
-    display: none;
-}
-
-button {
-    padding: 10px 20px;
-    font-size: 18px;
-    font-weight: bold;
-    cursor: pointer;
-    background-color: #ffcc00;
-    border: none;
-    border-radius: 5px;
-    margin-top: 15px;
-}
-
-button:hover {
-    background-color: #e6b800;
-}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Subway Surfers 2D Clone</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <div id="game-container">
-        <div id="score-board">Score: <span id="score">0</span> | Coins: <span id="coins">0</span></div>
-        <canvas id="gameCanvas" width="800" height="400"></canvas>
-        <div id="game-over-screen" class="hidden">
-            <h1>Game Over!</h1>
-            <p>Press "Space" or Click Restart to Play Again</p>
-            <button id="restart-btn">Restart</button>
-        </div>
+     <div class="team">
+      <div class="team-name">${safe(m.away || "Team 2")}</div>
+      <div class="score">
+       ${safe(makeScore(m,"away"))}
+      </div>
+     </div>
     </div>
-    <script src="script.js"></script>
+
+    <div class="vs">VS</div>
+
+    <div class="match-status">
+     ${safe(m.status_text || m.status || "Match details")}
+    </div>
+   </article>
+  `;
+ }).join("");
+}
+
+async function loadMatches(){
+ if(loading) return;
+ loading = true;
+
+ refreshBtn.textContent = "Loading...";
+
+ if(!allMatches.length){
+  container.innerHTML =
+   '<div class="loading">🏏 लाइव स्कोर लोड हो रहा है...</div>';
+ }
+
+ try{
+  const response = await fetch(API,{
+   method:"GET",
+   cache:"no-store"
+  });
+
+  if(!response.ok){
+   throw new Error("API error: "+response.status);
+  }
+
+  const data = await response.json();
+
+  if(!Array.isArray(data.matches)){
+   throw new Error("Invalid API response");
+  }
+
+  allMatches = data.matches;
+
+  render();
+
+  lastUpdate.textContent =
+   "Updated: " + new Date().toLocaleTimeString("en-IN");
+
+ }catch(error){
+  console.error(error);
+
+  if(!allMatches.length){
+   container.innerHTML = `
+    <div class="empty">
+     <div style="font-size:35px">⚠️</div>
+     <h3>स्कोर लोड नहीं हो पाया</h3>
+     <p>इंटरनेट या API में समस्या हो सकती है।</p>
+     <p>कृपया Refresh दबाएं।</p>
+    </div>`;
+  }else{
+   lastUpdate.textContent = "अपडेट असफल, पुराना डेटा दिखाया जा रहा है";
+  }
+
+ }finally{
+  loading = false;
+  refreshBtn.textContent = "↻ Refresh";
+ }
+}
+
+document.querySelectorAll(".filter").forEach(btn => {
+ btn.addEventListener("click",()=>{
+  document.querySelectorAll(".filter").forEach(b=>
+   b.classList.remove("active")
+  );
+  btn.classList.add("active");
+  currentFilter = btn.dataset.filter;
+  render();
+ });
+});
+
+search.addEventListener("input",render);
+refreshBtn.addEventListener("click",loadMatches);
+
+loadMatches();
+setInterval(loadMatches,60000);
+</script>
+
 </body>
 </html>
